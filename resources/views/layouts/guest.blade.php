@@ -10,7 +10,7 @@
 <body class="guest-page">
     <main class="guest-shell">
         <section class="guest-brand-panel" aria-label="City College of Cagayan de Oro">
-            <a class="brand brand-light" href="{{ url('/') }}">
+            <a class="brand" href="{{ url('/') }}">
                 <span class="brand-mark" aria-hidden="true">CC</span>
                 <span>
                     <strong>City College</strong>
@@ -18,9 +18,16 @@
                 </span>
             </a>
             <div class="brand-message">
-                <span class="eyebrow">Learning Module System</span>
-                <h1>Keep learning moving forward.</h1>
-                <p>One calm, focused space for courses, modules, and academic progress.</p>
+                <span class="eyebrow">Your learning space</span>
+                <h1>Where every lesson moves you forward<span class="gold-period">.</span></h1>
+                <p>Everything you need to learn, teach, and grow in one welcoming place.</p>
+            </div>
+            <div class="illustration-scene" aria-hidden="true">
+                <span class="illustration-orbit orbit-one"></span>
+                <span class="illustration-orbit orbit-two"></span>
+                <span class="floating-academic-icon floating-book">▤</span>
+                <span class="floating-academic-icon floating-spark">✦</span>
+                <img src="{{ asset('images/student-learning-illustration.png') }}" alt="" fetchpriority="high">
             </div>
             <p class="brand-footer">© {{ date('Y') }} City College of Cagayan de Oro</p>
         </section>

@@ -7,85 +7,35 @@
     <title>{{ $title ?? 'Dashboard' }} | City College LMS</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+@php
+    $portal = $portal ?? null;
+    $preview = $portal !== null;
+    $labels = match ($portal) {
+        'student' => ['Dashboard', 'My Subjects', 'Learning Modules', 'Assignments', 'My Progress', 'Announcements', 'My Profile'],
+        'teacher' => ['Dashboard', 'My Classes', 'Module Management', 'Assignments & Quizzes', 'My Students', 'Grades & Progress', 'Announcements', 'My Profile'],
+        'admin' => ['Dashboard', 'User Management', 'Student Management', 'Teacher Management', 'Programs & Subjects', 'Academic Year & Semester', 'Roles & Permissions', 'Activity Logs', 'System Settings'],
+        default => ['Dashboard', 'My courses', 'Learning modules', 'Calendar', 'Profile', 'Settings'],
+    };
+    $icons = ['▦', '▤', '◫', '□', '◎', '◉', '♧', '≡', '⚙'];
+    $navigation = array_map(fn ($label, $index) => ['label' => $label, 'icon' => $icons[$index], 'active' => $index === 0], $labels, array_keys($labels));
+    if (! $preview) {
+        $navigation[1]['url'] = '#courses';
+        $navigation[2]['url'] = '#modules';
+    }
+    $userName = $preview ? match ($portal) {'student' => 'Alex Rivera', 'teacher' => 'Prof. Mira Santos', default => 'Jordan Cruz'} : (auth()->user()->name ?? 'Student User');
+    $userRole = $preview ? ucfirst($portal) : (auth()->user()->role ?? 'Learner');
+@endphp
 <body class="app-page">
     <div class="app-shell">
-        <aside class="sidebar" data-sidebar>
-            <div class="sidebar-inner">
-                <a class="brand" href="{{ route('dashboard') }}">
-                    <span class="brand-mark" aria-hidden="true">CC</span>
-                    <span>
-                        <strong>City College</strong>
-                        <small>LMS Portal</small>
-                    </span>
-                </a>
-
-                <nav class="main-nav" aria-label="Main navigation">
-                    <span class="nav-label">Workspace</span>
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'is-active' : '' }}" href="{{ route('dashboard') }}">
-                        <span class="nav-icon" aria-hidden="true">▦</span>
-                        <span>Dashboard</span>
-                    </a>
-                    <a class="nav-link {{ request()->routeIs('courses.*') ? 'is-active' : '' }}" href="#courses">
-                        <span class="nav-icon" aria-hidden="true">▤</span>
-                        <span>My courses</span>
-                    </a>
-                    <a class="nav-link" href="#modules">
-                        <span class="nav-icon" aria-hidden="true">◫</span>
-                        <span>Learning modules</span>
-                    </a>
-                    <a class="nav-link" href="#calendar">
-                        <span class="nav-icon" aria-hidden="true">□</span>
-                        <span>Calendar</span>
-                    </a>
-
-                    <span class="nav-label nav-label-spaced">Account</span>
-                    <a class="nav-link" href="#profile">
-                        <span class="nav-icon" aria-hidden="true">◎</span>
-                        <span>Profile</span>
-                    </a>
-                    <a class="nav-link" href="#settings">
-                        <span class="nav-icon" aria-hidden="true">⚙</span>
-                        <span>Settings</span>
-                    </a>
-                </nav>
-
-                <div class="sidebar-help">
-                    <span class="help-icon" aria-hidden="true">?</span>
-                    <strong>Need help?</strong>
-                    <p>Reach out to your college support team.</p>
-                    <a href="mailto:support@citycollege.edu.ph">Contact support</a>
-                </div>
-            </div>
-        </aside>
-
+        <x-dashboard.sidebar :portal="$portal" :navigation="$navigation" />
         <div class="app-main">
-            <header class="topbar">
-                <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" data-menu-toggle>
-                    <span></span><span></span><span></span>
-                </button>
-                <div class="topbar-heading">
-                    <span class="topbar-kicker">City College of Cagayan de Oro</span>
-                    <strong>{{ $pageHeading ?? 'Learning overview' }}</strong>
-                </div>
-                <div class="topbar-actions">
-                    <button class="icon-button" type="button" aria-label="View notifications">
-                        <span aria-hidden="true">♢</span>
-                        <span class="notification-dot"></span>
-                    </button>
-                    <div class="profile-chip">
-                        <span class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'Student', 0, 1)) }}</span>
-                        <span class="profile-copy">
-                            <strong>{{ auth()->user()->name ?? 'Student User' }}</strong>
-                            <small>{{ auth()->user()->role ?? 'Learner' }}</small>
-                        </span>
-                    </div>
-                </div>
-            </header>
-
-            <main class="page-content">
-                @if (session('status'))
-                    <div class="alert alert-success">{{ session('status') }}</div>
+            <x-dashboard.topbar :heading="$pageHeading ?? 'Learning overview'" :user-name="$userName" :user-role="$userRole" :preview="$preview" />
+            <main class="page-content" id="main-content">
+                @if ($preview)
+                    <div class="preview-banner" role="status"><strong>Development preview</strong><span>Demonstration data only. This is not an authenticated session.</span></div>
+                    <nav class="portal-switcher" aria-label="Development portal switcher"><span>Preview portal:</span>@foreach (['student' => 'Student', 'teacher' => 'Teacher', 'admin' => 'Administrator'] as $key => $label)<a href="{{ route('dev.preview.'.$key) }}" @if ($portal === $key) aria-current="page" @endif>{{ $label }}</a>@endforeach</nav>
                 @endif
+                @if (session('status'))<div class="alert alert-success">{{ session('status') }}</div>@endif
                 @yield('content')
             </main>
         </div>
