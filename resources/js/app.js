@@ -1,14 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const loginRole = document.getElementById('login-role');
+    const loginIdInput = document.querySelector('[data-login-id-input]');
+    const loginIdLabel = document.querySelector('[data-login-id-label]');
+    const roleLabels = { student: 'Student ID', teacher: 'Employee ID', admin: 'Administrator Email' };
+
+    const updateLoginIdLabel = () => {
+        if (!loginRole || !loginIdInput || !loginIdLabel) return;
+        const label = roleLabels[loginRole.value] || 'Student ID';
+        loginIdInput.placeholder = label;
+        loginIdLabel.textContent = label;
+        loginIdInput.type = loginRole.value === 'admin' ? 'email' : 'text';
+        loginIdInput.autocomplete = loginRole.value === 'admin' ? 'email' : 'username';
+    };
+
+    loginRole?.addEventListener('change', updateLoginIdLabel);
+    updateLoginIdLabel();
+
     const passwordToggle = document.querySelector('[data-password-toggle]');
     const passwordInput = document.getElementById('password');
 
-    passwordToggle?.addEventListener('click', () => {
+    passwordToggle?.addEventListener('change', () => {
         if (!passwordInput) return;
-        const isVisible = passwordInput.type === 'text';
-        passwordInput.type = isVisible ? 'password' : 'text';
-        passwordToggle.textContent = isVisible ? 'Show' : 'Hide';
-        passwordToggle.setAttribute('aria-pressed', String(!isVisible));
-        passwordToggle.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+        passwordInput.type = passwordToggle.checked ? 'text' : 'password';
     });
 
     const toggle = document.querySelector('[data-menu-toggle]');

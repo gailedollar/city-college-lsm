@@ -8,33 +8,26 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="guest-page">
-    <main class="guest-shell">
-        <section class="guest-brand-panel" aria-label="City College of Cagayan de Oro">
-            <a class="brand" href="{{ url('/') }}">
-                <span class="brand-mark" aria-hidden="true">CC</span>
-                <span>
-                    <strong>City College</strong>
-                    <small>of Cagayan de Oro</small>
-                </span>
-            </a>
-            <div class="brand-message">
-                <span class="eyebrow">Your learning space</span>
-                <h1>Where every lesson moves you forward<span class="gold-period">.</span></h1>
-                <p>Everything you need to learn, teach, and grow in one welcoming place.</p>
+    <div class="login-shell">
+        <header class="login-header">
+            <div class="login-header-inner">
+                <a class="login-brand" href="{{ url('/') }}">
+                    <img src="{{ asset('images/city-college-logo.png') }}" alt="" width="50" height="42">
+                    <span><strong>City College</strong><small>Learning Module System</small></span>
+                </a>
+                <span class="login-header-label">City College of Cagayan de Oro</span>
             </div>
-            <div class="illustration-scene" aria-hidden="true">
-                <span class="illustration-orbit orbit-one"></span>
-                <span class="illustration-orbit orbit-two"></span>
-                <span class="floating-academic-icon floating-book">▤</span>
-                <span class="floating-academic-icon floating-spark">✦</span>
-                <img src="{{ asset('images/student-learning-illustration.png') }}" alt="" fetchpriority="high">
-            </div>
-            <p class="brand-footer">© {{ date('Y') }} City College of Cagayan de Oro</p>
-        </section>
+        </header>
 
-        <section class="guest-content">
-            @yield('content')
-        </section>
-    </main>
+        <main class="login-main">
+            <section class="login-form-column" aria-label="Sign in">
+                @yield('content')
+                <p class="login-copyright">© {{ date('Y') }} City College of Cagayan de Oro</p>
+            </section>
+            <aside class="login-visual" aria-label="Learning community illustration">
+                <img src="{{ asset('images/portal-roles-illustration.png') }}" alt="A student, teacher, and administrator working together" width="1223" height="1286">
+            </aside>
+        </main>
+    </div>
 </body>
 </html>
