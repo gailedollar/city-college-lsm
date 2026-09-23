@@ -1,0 +1,5 @@
+@extends('layouts.app', ['portal' => 'admin', 'preview' => false, 'title' => 'Student Accounts', 'pageHeading' => 'Student Accounts'])
+@section('content')
+<div class="page-intro"><div><span class="eyebrow">Administrator portal</span><h1>Student Accounts</h1><p>Create and review authorized Student accounts.</p></div><a class="button button-primary" href="{{ route('admin.students.create') }}">+ Create Student Account</a></div>
+<section class="content-panel"><div class="panel-heading"><div><span class="eyebrow">Account directory</span><h2>Registered students</h2></div><span>{{ $students->total() }} total</span></div><div class="account-list">@forelse ($students as $student)<article class="account-row"><span class="avatar">{{ strtoupper(substr($student->name, 0, 1)) }}</span><div><strong>{{ $student->name }}</strong><p>{{ $student->student_id }} · {{ $student->email }}</p></div><span class="status-chip status-approved">Student</span></article>@empty<div class="coming-soon"><h2>No Student accounts</h2><p>Create the first Student account to get started.</p></div>@endforelse</div>{{ $students->links() }}</section>
+@endsection

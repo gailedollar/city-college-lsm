@@ -1,0 +1,14 @@
+@extends('layouts.app', ['portal' => 'teacher', 'title' => 'Joining Requests', 'pageHeading' => 'Joining Requests'])
+@section('content')
+<div class="page-intro"><div><span class="eyebrow">Teacher portal{{ ($preview ?? true) ? ' · Prototype' : '' }}</span><h1>Joining Requests</h1><p>Review enrollment requests for your classrooms.</p></div><a class="button button-secondary" href="{{ route(($preview ?? true) ? 'dev.preview.teacher.classrooms' : 'teacher.classrooms') }}">My Classrooms</a></div>
+@if ($preview ?? true)
+<div class="prototype-note"><strong>Browser-session demonstration</strong><span>Approve and decline actions are stored only in this browser session. The production system must verify classroom ownership on the server.</span></div>
+<div class="request-list" data-request-list>
+@foreach ([['id'=>'request-1','name'=>'Jamie Flores','student'=>'2026-00142','class'=>'Introduction to Information Technology','date'=>'September 22, 2026'],['id'=>'request-2','name'=>'Patricia Lim','student'=>'2026-00187','class'=>'Introduction to Information Technology','date'=>'September 23, 2026'],['id'=>'request-3','name'=>'Noah Garcia','student'=>'2026-00211','class'=>'Computer Programming 1','date'=>'September 23, 2026']] as $request)
+<article class="request-card" data-enrollment-request="{{ $request['id'] }}"><div><span class="status-chip status-pending" data-request-status>Pending</span><h3>{{ $request['name'] }}</h3><p>{{ $request['student'] }} · {{ $request['class'] }}</p><small>Requested {{ $request['date'] }}</small></div><div class="request-actions"><button class="button button-secondary" type="button" data-request-action="declined">Decline</button><button class="button button-primary" type="button" data-request-action="approved">Approve</button></div></article>
+@endforeach
+</div>
+@else
+<div class="request-list">@forelse ($requests as $enrollment)<article class="request-card"><div><span class="status-chip status-pending">Pending</span><h3>{{ $enrollment->student->name }}</h3><p>{{ $enrollment->student->student_id }} · {{ $enrollment->classroom->name }}</p><small>Requested {{ $enrollment->created_at->timezone('Asia/Manila')->format('M j, Y g:i A') }}</small></div><div class="request-actions"><form method="POST" action="{{ route('teacher.requests.update', $enrollment) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="declined"><button class="button button-secondary" type="submit">Decline</button></form><form method="POST" action="{{ route('teacher.requests.update', $enrollment) }}">@csrf @method('PATCH')<input type="hidden" name="status" value="approved"><button class="button button-primary" type="submit">Approve</button></form></div></article>@empty<div class="coming-soon"><h2>No pending requests</h2><p>New student joining requests will appear here.</p></div>@endforelse</div>
+@endif
+@endsection

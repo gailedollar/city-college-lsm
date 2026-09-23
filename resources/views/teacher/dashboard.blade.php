@@ -1,32 +1,28 @@
 @extends('layouts.app', ['portal' => 'teacher', 'title' => 'Teacher dashboard', 'pageHeading' => 'Teacher dashboard'])
 @section('content')
-<div class="page-intro"><div><span class="eyebrow">Teacher portal · First semester</span><h1>Good day, Prof. Santos.</h1><p>Review your classes, modules, and student submissions.</p></div><span class="semester-pill">Academic year 2026–2027</span></div>
+<div class="page-intro"><div><span class="eyebrow">Teacher portal</span><h1>Good day, {{ ($preview ?? true) ? 'Prof. Santos' : auth()->user()->name }}.</h1><p>Review your classrooms and enrollment requests.</p></div><div class="page-actions"><a class="button button-primary" href="{{ route(($preview ?? true) ? 'dev.preview.teacher.classrooms.create' : 'teacher.classrooms.create') }}">+ Create Classroom</a><a class="button button-secondary" href="{{ route(($preview ?? true) ? 'dev.preview.teacher.classrooms' : 'teacher.classrooms') }}">My Classrooms</a></div></div>
 <section class="stat-grid" aria-label="Teaching summary">
-    <x-dashboard.stat-card label="Assigned classes" value="4" detail="Two BSIT sections" icon="▤" />
-    <x-dashboard.stat-card label="Published modules" value="12" detail="Ready for students" icon="◫" tone="green" />
-    <x-dashboard.stat-card label="Total students" value="126" detail="Across all classes" icon="♧" />
-    <x-dashboard.stat-card label="Pending submissions" value="18" detail="Awaiting review" icon="◷" tone="gold" />
+    <x-dashboard.stat-card label="Active classrooms" :value="($classrooms ?? collect())->count()" detail="Created classrooms" icon="▤" />
+    <x-dashboard.stat-card label="Published modules" value="0" detail="No modules published" icon="◫" tone="green" />
+    <x-dashboard.stat-card label="Total students" :value="$totalStudents ?? 0" detail="Approved enrollments" icon="♧" />
+    <x-dashboard.stat-card label="Pending submissions" value="0" detail="No submissions awaiting review" icon="◷" tone="gold" />
 </section>
 <div class="dashboard-grid">
-    <x-dashboard.panel title="Assigned classes" eyebrow="My teaching load"><x-dashboard.list :items="[
-        ['title' => 'Introduction to Information Technology', 'detail' => 'BSIT 1A · Mon/Wed 9:00 AM', 'meta' => '34 students'],
-        ['title' => 'Introduction to Information Technology', 'detail' => 'BSIT 1B · Tue/Thu 10:30 AM', 'meta' => '32 students'],
-        ['title' => 'Computer Programming 1', 'detail' => 'BSIT 1A · Tue/Thu 1:00 PM', 'meta' => '30 students'],
-        ['title' => 'Computer Programming 1', 'detail' => 'BSIT 1B · Fri 8:00 AM', 'meta' => '30 students'],
-    ]" /></x-dashboard.panel>
-    <x-dashboard.panel title="Upcoming class activities" eyebrow="On the calendar"><x-dashboard.list :items="[
-        ['title' => 'Digital literacy reflection due', 'detail' => 'Introduction to IT · BSIT 1A', 'meta' => 'Sep 25'],
-        ['title' => 'Programming lab 04', 'detail' => 'Computer Programming 1 · BSIT 1B', 'meta' => 'Sep 29'],
-        ['title' => 'Module 5 discussion', 'detail' => 'Introduction to IT · BSIT 1B', 'meta' => 'Oct 1'],
-    ]" /></x-dashboard.panel>
-    <x-dashboard.panel title="Recent student activities" eyebrow="Latest updates"><x-dashboard.list :items="[
-        ['title' => '18 new assignment submissions', 'detail' => 'Digital literacy reflection', 'meta' => 'Today'],
-        ['title' => 'Module 4 completed', 'detail' => 'BSIT 1A · 27 students', 'meta' => 'Yesterday'],
-        ['title' => 'Quiz 03 submitted', 'detail' => 'Computer Programming 1', 'meta' => 'Sep 20'],
-    ]" /></x-dashboard.panel>
-    <x-dashboard.panel title="Announcements" eyebrow="Faculty notices"><x-dashboard.list :items="[
-        ['title' => 'Faculty planning meeting', 'detail' => 'Department meeting in the faculty room.', 'meta' => 'Sep 27'],
-        ['title' => 'Midterm assessment schedule', 'detail' => 'Draft schedules are available for review.', 'meta' => 'Oct 3'],
-    ]" /></x-dashboard.panel>
+    <x-dashboard.panel title="Pending enrollment requests" eyebrow="Needs review">
+        @if (($pendingEnrollments ?? collect())->isEmpty())
+            <p class="empty-filter">No pending enrollment requests.</p>
+        @else
+            <x-dashboard.list :items="$pendingEnrollments->map(fn ($enrollment) => ['title' => $enrollment->student->name, 'detail' => $enrollment->classroom->name, 'meta' => 'Pending'])" />
+        @endif
+    </x-dashboard.panel>
+    <x-dashboard.panel title="Assigned classes" eyebrow="My teaching load">
+        @if (($classrooms ?? collect())->isEmpty())
+            <p class="empty-filter">No classrooms created yet.</p>
+        @else
+            <x-dashboard.list :items="$classrooms->map(fn ($classroom) => ['title' => $classroom->name, 'detail' => $classroom->section, 'meta' => $classroom->enrolled_students_count.' students'])" />
+        @endif
+    </x-dashboard.panel>
+    <x-dashboard.panel title="Upcoming class activities" eyebrow="On the calendar"><p class="empty-filter">No upcoming class activities.</p></x-dashboard.panel>
+    <x-dashboard.panel title="Recent student activities" eyebrow="Latest updates"><p class="empty-filter">No recent student activity.</p></x-dashboard.panel>
 </div>
 @endsection

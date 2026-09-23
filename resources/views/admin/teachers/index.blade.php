@@ -1,0 +1,5 @@
+@extends('layouts.app', ['portal' => 'admin', 'preview' => false, 'title' => 'Teacher Management', 'pageHeading' => 'Teacher Management'])
+@section('content')
+<div class="page-intro"><div><span class="eyebrow">Administrator portal</span><h1>Teacher Accounts</h1><p>Create and review authorized teacher accounts.</p></div><a class="button button-primary" href="{{ route('admin.teachers.create') }}">+ Create Teacher Account</a></div>
+<section class="content-panel"><div class="panel-heading"><div><span class="eyebrow">Account directory</span><h2>Registered teachers</h2></div><span>{{ $teachers->total() }} total</span></div><div class="account-list">@forelse ($teachers as $teacher)<article class="account-row"><span class="avatar">{{ strtoupper(substr($teacher->name, 0, 1)) }}</span><div><strong>{{ $teacher->name }}</strong><p>{{ $teacher->employee_id }} · {{ $teacher->email }}</p></div><span class="status-chip status-approved">Teacher</span></article>@empty<div class="coming-soon"><h2>No teacher accounts</h2><p>Create the first teacher account to get started.</p></div>@endforelse</div>{{ $teachers->links() }}</section>
+@endsection
